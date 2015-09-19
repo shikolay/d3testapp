@@ -1,25 +1,8 @@
-var pie = new d3pie("sdnchart", {
-    "data": {
-            "content": [
-                {
-                    "label": "Scheme",
-                    "value": 67706
-                },
-                {
-                    "label": "Rust",
-                    "value": 36344
-                },
-                {
-                    "label": "FoxPro",
-                    "value": 32170
-                }
-            ]
-    }
-});
-
 
 $(function(){
     var DATA_SOURCE = 'data/sdn.xml';
+    var loadingIndicator = $('.loadingIndicator');
+    var errorIndicator = $('.errorIndicator');
 
     var SDNData = Backbone.Collection.extend({
         url: DATA_SOURCE,
@@ -32,30 +15,66 @@ $(function(){
         },
         parse: function(data) {
             var parsed = [];
-            
+            var self = this;
+
             $(data).find('sdnEntry').each(function(){
                 var sdnEntry = $(this);
                 var uid = sdnEntry.find('uid').text();
-                var country = sdnEntry.find('country').text();
+                var country = sdnEntry.find('country').first().text();
 
                 parsed.push({
                     uid: uid,
                     country: country
                 });
+
+                if (self.countryHash[country]){
+                    self.countryHash[country] += 1;
+                }
+                else {
+                    self.countryHash[country] = 1;
+                }
             });
 
-            console.log(parsed.length);
             return parsed;
+        },
+
+        getPieData: function() {
+            var countries = _.keys(this.countryHash);
+            var results = [];
+
+            for (var i=0; i<countries.length; i++){
+                var country = countries[i];
+
+                if (country) {
+                    results.push({
+                        'label': country,
+                        'value': this.countryHash[country]
+                    });
+                }
+            }
+            return results;
         }
     });
 
-    var SDNCollection = new SDNData();
-    SDNCollection.fetch({
+    var countryDataCollection = new SDNData();
+
+    countryDataCollection.fetch({
         success: function(){
-            debugger;
+            var pie = new d3pie("sdnchart", {
+                "data": {
+                    "smallSegmentGrouping": {
+                        "enabled": true,
+                        "value": 2
+                    },
+                    "content": countryDataCollection.getPieData()
+                }
+            });
+
+            loadingIndicator.hide();
+
         },
         error: function(){
-            debugger;
+            errorIndicator.show();
         }
     });
 
