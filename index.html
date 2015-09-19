@@ -5,7 +5,6 @@
         <title>Page Title</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <!--link href="css/main.css" rel="stylesheet"-->
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
         <script src="bower_components/underscore/underscore.js"></script>
         <script src="bower_components/backbone/backbone-min.js"></script>
@@ -16,10 +15,13 @@
 
     <body>
         <div id="sdnchart" class="chart"></div>
-        <div class="loadingIndicator">Data is loading...</div>
+        <div class="loadingIndicator">
+            <img src="https://pbs.twimg.com/profile_images/1377352619/ActivityIndicator_bigger.gif" />
+            <div>Loading data...</div>
+        </div>
         <div class="errorIndicator" style="display: none;">Something goes wrong, see dev console for details</div>
     </body>
-    
+
     <script src="js/main.js"></script>
 </html>
 
